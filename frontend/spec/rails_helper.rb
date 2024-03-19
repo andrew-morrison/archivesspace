@@ -3,6 +3,7 @@ require 'exceptions'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'capybara/rails'
+require 'capybara-screenshot/rspec'
 require 'rails-controller-testing'
 require 'selenium-webdriver'
 require_relative 'selenium/common/webdriver'
@@ -25,10 +26,20 @@ end
 
 # Firefox
 Capybara.register_driver :firefox do |app|
+  profile = Selenium::WebDriver::Firefox::Profile.new
+  profile['webdriver.log.level'] = 'ALL'
+  profile['browser.download.dir'] = Dir.tmpdir
+  profile['browser.download.folderList'] = 2
+  profile['browser.helperApps.alwaysAsk.force'] = false
+  profile['browser.helperApps.neverAsk.saveToDisk'] = 'application/msword, application/csv, application/pdf, application/xml,  application/ris, text/csv, image/png, application/pdf, text/html, text/plain, application/zip, application/x-zip, application/x-zip-compressed'
+  profile['pdfjs.disabled'] = true
+  options = Selenium::WebDriver::Firefox::Options.new(args: FIREFOX_OPTS)
+  options.profile = profile
+
   Capybara::Selenium::Driver.new(
     app,
     browser: :firefox,
-    options: Selenium::WebDriver::Firefox::Options.new(args: FIREFOX_OPTS)
+    options: options
   ).extend DriverMixin
 end
 
@@ -41,6 +52,21 @@ end
 # This should change once the app gets to a point where it's not just throwing
 # tons of errors...
 Capybara.raise_server_errors = false
+
+# Html pages saved after Capybara spec failures will reference this to load assets
+# so running a local dev server will help displaying the page correctly in a browser
+Capybara.asset_host = 'http://localhost:3000/'
+
+Capybara::Screenshot.register_driver(:chrome) do |driver, path|
+  driver.browser.save_screenshot(path)
+end
+
+Capybara::Screenshot.register_driver(:firefox) do |driver, path|
+  driver.browser.save_screenshot(path)
+end
+
+# keep the last 30 screenshots / pages of capybara spec failures
+Capybara::Screenshot.prune_strategy = :keep_last_run
 
 
 RSpec.configure do |config|

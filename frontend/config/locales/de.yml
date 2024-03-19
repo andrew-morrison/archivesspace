@@ -742,6 +742,22 @@ de:
       representative_file_version: Vorschaubild
     blank_facet_query_fields:
       owner_repo_display_string_u_ssort: Aufbewahrungsort
+    top_container_mgmt:
+      not_exported_to_ils: Nicht exportiert
+      restricted: Eingeschränkt
+      indicator: Kennzeichnung
+      series: Serie
+      asc: Aufsteigend
+      desc: Absteigend
+      ils_holding_id: IBS Bestands-ID
+      not_restricted: Nicht eingeschränkt
+      barcode: Strichcode
+      exported_to_ils: Exportiert ins IBS
+      container_profile: Behältnis-Profil
+      internal_note: Interne Anmerkung
+      location: Standort
+      type: Typ
+      resource_accession: Ressource/Eingang
   become-user:
     success: Benutzer erfolgreich gewechselt
     become-user: Als Benutzer ausgeben
@@ -813,6 +829,8 @@ de:
     delete: '&times;'
     no_results: Keine passenden Ergebnisse.  Versuchen Sie 'Blättern'.
     searching: Suche...
+    components:
+      browse: Komponenten durchsuchen
   mixed_content:
     wrap_prefix: 'Umschließen mit:'
     help: Gemischter Inhalt aktiviert&#160;&#160;--&#160;&#160;Tippen Sie '<', um
@@ -1307,14 +1325,13 @@ de:
       action:
         add: Namensform hinzufügen
         make_authorized: Zum autoritativen Namen machen
-        make_display_name: Zum Anzeigenamen machen
-        make_primary: Zum Primärnamen machen
+        make_display_name: Zum Anzeigenamen machen        
         make_display_name_tooltip: Verwenden Sie diese Option, um diese Namensform
           anzuzeigen, wenn der Akteur-Aufzeichnung mehrere Namensformen zugeordnet
           sind.
         make_authorized_tooltip: Verwenden Sie diese Option, um diese Namensform zum
           autoritativen Namen zu machen.
-        make_primary_tooltip: Zur Primär-Info machen
+        
   note:
     _frontend:
       preview:
@@ -1892,7 +1909,10 @@ de:
     _frontend:
       action:
         add: Akteur-Verknüpfung hinzufügen
-        make_primary_tooltip: Zum primären Akteur machen
+        make_primary_tooltip: |
+            <p>Zum primären Akteur machen</p>
+            <p>Wird verwendet, um anzugeben, welcher mit dem Datensatz verknüpfte Akteur der primäre Akteur ist. Es kann nur ein verknüpfter Akteur als primärer Akteur festgelegt werden.</p> 
+            <p>Beim MARCXML Export ist der primäre Akteur der 1XX-Wert.</p>
         make_primary: Primär machen
     is_primary: Primär
   linked_record:
@@ -1949,8 +1969,8 @@ de:
       digitale Objekte zu erstellen. Das XLSX-Format ist für jene geeignet, die Zugang
       zu Microsoft Excel haben.
     aspace_subject_import_template_csv: Neue Themen-Aufzeichnungen erstellen. Beachten
-      Sie, dass diese Vorlage zum Erstellen der Standort-Aufzeichnungen selbst und
-      nicht zum Verknüpfen mit anderen Aufzeichnungen gedacht ist.
+      Sie, dass diese Vorlage zum Erstellen der Themen-Aufzeichnungen selbst und nicht
+      zum Verknüpfen mit anderen Aufzeichnungen gedacht ist.
   top_container:
     restricted: Eingeschränkt?
     managed_container_2_indicator_tooltip: "<p>Ein alphanumerischer Ausdruck, um den
@@ -2076,7 +2096,7 @@ de:
     container_profile: Behältnis-Profil
     container_profile_tooltip: "<p>Eine Beschreibung verschiedener Eigenschaften einer
       speziellen Art von Behältnis inklusive Dimensionen.</p>\n"
-    indicator: Kennzeichner
+    indicator: Kennzeichnung
     barcode: Strichcode
     barcode_tooltip: "<p>Wird verwendet, um den Strichcode anzugeben, welcher das
       Haupt-Behältnis eindeutig identifiziert.</p>\n"

@@ -6,6 +6,8 @@
 
  body {
      font-family: <%= AppConfig[:pui_pdf_font_name] %>;
+     line-height: <%= AppConfig[:pui_pdf_paragraph_line_height] %>;
+     line-height: 125%;
  }
 
 .title-page {
@@ -23,6 +25,20 @@ span.title {
 }
 
 .title {
+  line-height: 140%;
+  line-height: <%= AppConfig[:pui_pdf_title_line_height] %>;
+}
+
+li {
+  list-style-type: none;    
+  position: relative;
+}
+
+li::before {
+    content: '•';
+    position: absolute;
+    left: -0.8em;          /* Adjust this value so that it appears where you want. */
+    font-size: 1.1em;      /* Adjust this value so that it appears what size you want. */
 }
 
  div.logo {
@@ -85,6 +101,9 @@ span.title {
      font-size: 75%;
      text-align: right;
      color: black;
+     display: block;
+     float: right;
+     width: 60%;
  }
 
  .first-post .container-information {
@@ -225,6 +244,8 @@ span.title {
      margin-bottom: 1em;
      display: block;
      border-top: solid 1px #dedede;
+     padding-top: 10px;
+     padding-bottom: 20px;
  }
 
  .print-record-border.print-record.level-1 { padding-top: 0; margin-top: 1em; }
@@ -302,6 +323,7 @@ span.title {
     margin-top: 10px;
     font-weight: normal !important;
     font-size: 75% !important;
+    width: 40%;
  }
 
  .indented dt {

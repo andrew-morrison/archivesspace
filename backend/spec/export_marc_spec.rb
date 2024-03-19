@@ -76,11 +76,11 @@ describe 'MARC Export' do
      end
 
      it "root node should have xmlns:xsi defined" do
-       expect(@xml).to match(/<collection.*xmlns:xsi="http:\/\/www.w3.org\/2001\/XMLSchema-instance"/)
+       expect(@xml).to match(/<collection.*xmlns:xsi="https:\/\/www.w3.org\/2001\/XMLSchema-instance"/)
      end
 
      it "root node should have xsi:schemaLocation defined" do
-       expect(@xml).to match(/<collection.*xsi:schemaLocation="http:\/\/www.loc.gov\/MARC21\/slim http:\/\/www.loc.gov\/standards\/marcxml\/schema\/MARC21slim.xsd"/)
+       expect(@xml).to match(/<collection.*xsi:schemaLocation="https:\/\/www.loc.gov\/MARC21\/slim https:\/\/www.loc.gov\/standards\/marcxml\/schema\/MARC21slim.xsd"/)
      end
    end
 
@@ -813,6 +813,70 @@ describe 'MARC Export' do
       expect(@marc_unpub_incl.xpath("//marc:datafield[@tag = '#{600}']").length > 0).to be_truthy
     end
   end
+
+  describe 'linked agent mappings with primary agents' do
+    before(:all) do
+      as_test_user('admin', true) do
+        @agents = []
+        [
+          [:json_agent_person,
+           names: [ build(:json_name_person,
+                          source: "local",
+                          prefix: "MR") ]
+          ],
+          [:json_agent_person,
+           names: [ build(:json_name_person,
+                          source: "local",
+                          prefix: "MR") ]
+          ],
+          [:json_agent_person,
+           names: [ build(:json_name_person,
+                          source: "local",
+                          prefix: "MR") ]
+          ],
+
+        ].each do |type_and_opts|
+          @agents << create(type_and_opts[0], type_and_opts[1])
+        end
+
+        @resource = create(:json_resource,
+                 :linked_agents => [
+                   {
+                     :ref => @agents[0].uri,
+                     :role => 'creator',
+                     :relator => generate(:relator),
+                     :is_primary => false
+                   },
+                   {
+                     :ref => @agents[1].uri,
+                     :role => 'creator',
+                     :relator => generate(:relator),
+                     :is_primary => false
+                   },
+                   {
+                     :ref => @agents[2].uri,
+                     :role => 'creator',
+                     :relator => generate(:relator),
+                     :is_primary => true
+                   },
+                 ])
+
+        @marc = get_marc(@resource)
+        raise Sequel::Rollback
+      end
+    end
+
+    it "maps the creator that is primary to 100 tag" do
+      name = @agents[2]['names'][0]
+      name_string = %w(primary_ rest_of_).map {|p| name["#{p}name"]}.reject {|n| n.nil? || n.empty?}.join(name['name_order'] == 'direct' ? ' ' : ', ')
+
+      df = @marc.at("datafield[@tag='100']")
+      resource = @resource['linked_agents'].select { |r| r['role'] == 'creator' }.first
+
+      expect(df.at("subfield[@code='a']")).to have_inner_text(/#{name_string}/)
+    end
+  end
+
 
 
   describe 'linked agent mappings' do
