@@ -239,4 +239,46 @@ describe 'Solr model' do
     end
   end
 
+  describe 'Define fields' do
+
+    AdvancedSearch.define_field(
+      :name => 'qwerty',
+      :type => :text,
+      :visibility => [:staff],
+      :solr_field => 'qwerty_u_sstr',
+      :always_literal => true
+    )
+    AdvancedSearch.define_field(
+      :name => 'uiop',
+      :type => :text,
+      :visibility => [:staff],
+      :solr_field => 'uiop_u_sstr'
+    )
+
+    let (:canned_query) {
+      {"jsonmodel_type"=>"boolean_query",
+       "op"=>"AND",
+       "subqueries"=>[{"jsonmodel_type"=>"boolean_query",
+                       "op"=>"AND",
+                       "subqueries"=>[{"field"=>"qwerty",
+                                       "value"=>"https://www.example.com/view?page=1",
+                                       "jsonmodel_type"=>"field_query"}]},
+                      {"jsonmodel_type"=>"boolean_query",
+                       "op"=>"AND",
+                       "subqueries"=>[{"jsonmodel_type"=>"boolean_query",
+                                       "op"=>"AND",
+                                       "subqueries"=>[{"field"=>"uiop",
+                                                       "value"=>"https://www.example.com/view?page=1",
+                                                       "jsonmodel_type"=>"field_query"}]}]}]}
+    }
+
+    it "constructs advanced queries that respect always_literal option in define_field calls" do
+      query_string = Solr::Query.construct_advanced_query_string(canned_query)
+
+      expect(query_string).to include('qwerty_u_sstr:("https\:\/\/www.example.com\/view\?page=1")')
+      expect(query_string).to include('uiop_u_sstr:(https //www.example.com/view?page=1)')
+    end
+
+  end
+
 end
